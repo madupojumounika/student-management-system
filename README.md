@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/vitejs/vite/main/docs/public/logo.svg" alt="Logo" width="80" height="80">
   <h1 align="center">Smart Student Management System</h1>
   <p align="center">
     A production-ready, full-stack platform for managing academic records, attendance, and student performance.
