@@ -59,8 +59,8 @@ Ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/smart-student-management-system.git
-cd smart-student-management-system
+git clone https://github.com/madupojumounika/student-management-system.git
+cd student-management-system
 ```
 
 ### 2. Install Dependencies
