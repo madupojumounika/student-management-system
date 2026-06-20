@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  student   Student?
+  teacher   Teacher?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Department {
+  id              Int        @id @default(autoincrement())
+  department_name String     @unique
+  students        Student[]
+  teachers        Teacher[]
+}
+
+model Student {
+  id           Int              @id @default(autoincrement())
+  student_id   String           @unique
+  userId       Int              @unique
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentId Int
+  department   Department       @relation(fields: [departmentId], references: [id])
+  semester     Int
+  section      String
+  phone        String?
+  address      String?
+  subjects     StudentSubject[]
+  attendances  Attendance[]
+  marks        Mark[]
+}
+
+model Teacher {
+  id            Int              @id @default(autoincrement())
+  teacher_id    String           @unique
+  userId        Int              @unique
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentId  Int
+  department    Department       @relation(fields: [departmentId], references: [id])
+  qualification String
+  subjects      TeacherSubject[]
+}
+
+model Subject {
+  id           Int              @id @default(autoincrement())
+  subject_code String           @unique
+  subject_name String
+  semester     Int
+  credits      Int
+  teachers     TeacherSubject[]
+  students     StudentSubject[]
+  attendances  Attendance[]
+  marks        Mark[]
+}
+
+model TeacherSubject {
+  id        Int      @id @default(autoincrement())
+  teacherId Int
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subjectId Int
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, subjectId])
+}
+
+model StudentSubject {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId Int
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, subjectId])
+}
+
+model Attendance {
+  id              Int              @id @default(autoincrement())
+  studentId       Int
+  student         Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId       Int
+  subject         Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  attendance_date DateTime         @default(now())
+  status          AttendanceStatus
+
+  @@unique([studentId, subjectId, attendance_date])
+}
+
+model Mark {
+  id             Int     @id @default(autoincrement())
+  studentId      Int
+  student        Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId      Int
+  subject        Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  internal_marks Float   @default(0)
+  external_marks Float   @default(0)
+  total_marks    Float   @default(0)
+  percentage     Float   @default(0)
+  grade          String
+
+  @@unique([studentId, subjectId])
+}
